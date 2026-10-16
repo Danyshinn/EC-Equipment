@@ -141,7 +141,7 @@ function card(it,open,terms){
   const over=it._min!==null&&it._min<0;
   const due=TY.map(k=>{const v=it[k+' due date'],n=days(v),nd=it._nd.includes(k);
     if(!nd&&v==null)return `<div class="d off ${k}"><h4>${k}</h4><div class="v">—</div><div class="s">no label</div></div>`;
-    const meta=`<div class="s">every ${it[k+' interval']??'—'} mo</div><div class="s">by ${who(it[it_u(k)])}</div><div class="s">signed ${fmt(it[k+' sign'])}</div>`;
+    const meta=`<div class="s">every ${it[k+' interval']??'—'} mo</div><div class="s">signed ${fmt(it[k+' sign'])}</div><div class="s">by ${who(it[it_u(k)])}</div>`;
     if(nd)return `<div class="d nd ${k}"><h4>${k}</h4><div class="v">No date</div><div class="s">has label, no due date</div>${meta}</div>`;
     return `<div class="d ${n<0?'over ':''}${k}"><h4>${k}</h4><div class="v">${fmt(v)}</div><div class="s ${n<0?'late':''}">${rel(n)||'&nbsp;'}</div>${meta}</div>`}).join('');
   const notes=['Heads up','Heads up2','Change Loc'].filter(k=>it[k]).map(k=>`<div class="note"><b>${k}:</b> ${fmt(it[k])}</div>`).join('');
@@ -176,7 +176,7 @@ const recs=[];
 D.items.forEach(it=>{TY.forEach(t=>{const v=it[t+' due date'];if(isD(v))recs.push({it,t,v,n:days(v)})})});
 recs.sort((a,b)=>a.v<b.v?-1:a.v>b.v?1:a.it.Equipment<b.it.Equipment?-1:1);
 let sSel='all',sTy='all';const sups=uniq('Supervisor');
-const meta=(it,t)=>`every ${it[t+' interval']??'—'} mo · by ${who(it[UK[t]])} · last signed ${fmt(it[t+' sign'])}`;
+const meta=(it,t)=>`every ${it[t+' interval']??'—'} mo · last signed ${fmt(it[t+' sign'])} · by ${who(it[UK[t]])}`;
 const head=(it)=>`<div class="mu">${esc(it.Description||'')}${it.Brand?' · '+esc(it.Brand):''}</div><div class="mu">📍 ${esc(it['Room Abrv']||'')} ${esc(it['Room Num']||'')} · ${esc(it.Location||'')}${sSel=='all'?' · 👤 '+esc(it.Supervisor||''):''}</div>`;
 const row=r=>{const{it,t,n}=r;return `<div class="rw ${t}${n<0?' over':''}"><div class="dy"><b>${n<0?'−'+-n:n}</b><small>${n<0?'days late':n==0?'today':'days'}</small></div><div><div><b class="eq2" data-e="${esc(it.Equipment)}">${esc(it.Equipment)}</b> <span class="badge ty">${t}</span> <span class="mu">${fmt(r.v)}</span></div>${head(it)}<div class="mu">${meta(it,t)}</div></div></div>`};
 function renderS(){
