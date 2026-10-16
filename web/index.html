@@ -28,7 +28,8 @@ header small{opacity:.85;font-size:12px}
 #q:focus{border-color:var(--ac)}
 .row{display:flex;gap:8px;margin-top:8px;overflow-x:auto;scrollbar-width:none;align-items:center}
 .row::-webkit-scrollbar{display:none}
-.chip,select{font:inherit;font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--tx);white-space:nowrap;cursor:pointer}
+.chip,select,#cd{font:inherit;font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--tx);white-space:nowrap;cursor:pointer}
+#cd{width:96px;cursor:text}
 .chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 @media(prefers-color-scheme:dark){.chip.on{color:#04211e}}
 #cnt{color:var(--mu);font-size:13px;padding:10px 14px 2px}
@@ -45,11 +46,14 @@ header small{opacity:.85;font-size:12px}
 .type{background:var(--acs);color:var(--ac)}
 .loc{margin:8px 0;font-size:13.5px}
 .loc b{font-weight:600}
-/* ---- PM / CA / PQ : one fixed colour per type, always */
+/* ---- PM / CA / PQ : each type has its own colour, but it only lights up when THAT label is overdue */
 .PM{--c:var(--pm);--cs:var(--pms)}.CA{--c:var(--ca);--cs:var(--cas)}.PQ{--c:var(--pq);--cs:var(--pqs)}
 .due{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
-.d{border-radius:12px;padding:7px 8px;font-size:12px;background:var(--cs);border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
-.d h4{display:inline-block;margin:0 0 4px;padding:1px 9px;border-radius:99px;font-size:11px;letter-spacing:.5px;background:var(--c);color:var(--on)}
+.d{border-radius:12px;padding:7px 8px;font-size:12px;background:var(--bg);border:1px solid var(--bd)}
+.card.ov .d:not(.over):not(.nd):not(.off){background:var(--card)}
+.d.over{background:var(--cs);border:1.5px solid var(--c)}
+.d h4{display:inline-block;margin:0 0 4px;padding:1px 9px;border-radius:99px;font-size:11px;letter-spacing:.5px;background:var(--bd);color:var(--mu)}
+.d.over h4{background:var(--c);color:var(--on)}
 .d .v{font-weight:700;font-size:13px}
 .d .s{color:var(--mu);margin-top:2px}
 .d .late{color:var(--tx);font-weight:700}
@@ -71,20 +75,17 @@ mark{background:#fde047;color:#000;border-radius:3px;padding:0 1px}
 #tabs button.on{opacity:1;border-color:#fff}
 @media(prefers-color-scheme:dark){#tabs{background:#0b3b36}}
 .pill i{font-style:normal;font-size:11px;font-weight:700;border-radius:99px;padding:1px 6px;margin-left:6px;background:var(--ovb);color:var(--red)}
-.pill i.g{background:var(--nds);color:var(--mu);border:1px dashed var(--nd);padding:0 6px}
 .pill.on i{background:#fff}
 #sum{padding:10px 14px 2px;color:var(--mu);font-size:13px}
 .lbl{padding:12px 14px 4px;font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--mu)}.lbl.o{color:var(--red)}
 .td{margin:10px 12px;padding:6px 12px;border-radius:99px;background:var(--ac);color:#fff;text-align:center;font-size:12px;font-weight:700}
 @media(prefers-color-scheme:dark){.td{color:#04211e}}
-.rw{display:flex;gap:12px;background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--c);border-radius:14px;padding:10px 12px;margin:0 12px 8px;box-shadow:var(--sh)}
+.rw{display:flex;gap:12px;background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--bd);border-radius:14px;padding:10px 12px;margin:0 12px 8px;box-shadow:var(--sh)}
 .rw.over{background:var(--ov);border-color:var(--ovb);border-left-color:var(--c)}
-.rw.nd{background:var(--nds);border:1.5px dashed var(--nd);border-left:5px dashed var(--nd);box-shadow:none}
-.dy{min-width:50px;text-align:center;line-height:1.1}.dy b{display:block;font-size:20px;color:var(--c)}.dy small{color:var(--mu);font-size:11px}
-.rw.nd .dy b{color:var(--mu);font-size:16px}
+.dy{min-width:50px;text-align:center;line-height:1.1}.dy b{display:block;font-size:20px}.rw.over .dy b{color:var(--c)}.dy small{color:var(--mu);font-size:11px}
 .mu{color:var(--mu);font-size:13px}.rw .eq2{font-size:15px;cursor:pointer;color:var(--ac);word-break:break-all}
-.ty{background:var(--c);color:var(--on)}
-.rw.nd .ty{background:var(--c)}
+.ty{background:var(--bd);color:var(--mu)}
+.rw.over .ty{background:var(--c);color:var(--on)}
 #slist{max-width:760px;margin:0 auto;padding-bottom:40px}
 </style>
 </head>
@@ -106,7 +107,8 @@ mark{background:#fde047;color:#000;border-radius:3px;padding:0 1px}
 <section id="v-sup" hidden>
 <div class="bar"><div class="wrap"><div class="row" id="spills"></div>
 <div class="row"><button class="chip on" data-ty="all">All types</button><button class="chip" data-ty="PM">PM</button><button class="chip" data-ty="CA">CA</button><button class="chip" data-ty="PQ">PQ</button>
-<select id="win"><option value="30">Next 30 days</option><option value="60">Next 60 days</option><option value="90" selected>Next 90 days</option><option value="180">Next 180 days</option></select></div></div></div>
+<select id="win"><option value="30">Next 30 days</option><option value="60">Next 60 days</option><option value="90" selected>Next 90 days</option><option value="180">Next 180 days</option><option value="c">Custom…</option></select>
+<input id="cd" type="number" inputmode="numeric" min="1" max="3650" value="120" placeholder="days" aria-label="number of days" hidden></div></div></div>
 <div class="wrap"><div id="sum"></div><div id="slist"></div></div></section>
 <script src="data.js"></script>
 <script>
@@ -119,12 +121,15 @@ const days=v=>isD(v)?Math.round((new Date(v+'T00:00:00')-today)/864e5):null;
 const who=a=>a?`<span title="${esc((D.people[a]||[''])[0])}${D.people[a]&&D.people[a][1]?' · ext '+D.people[a][1]:''}">${esc(a)}</span>`:'—';
 const rel=n=>n===null?'':n<0?`${-n} d overdue`:n===0?'due today':`in ${n} d`;
 const TY=['PM','CA','PQ'],UK={PM:'PM user',CA:'CA user',PQ:'VA user'};
+const norm=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'');
 // precompute search text + status
 D.items.forEach(it=>{
   const t=TY.map(k=>days(it[k+' due date'])).filter(n=>n!==null);
   it._min=t.length?Math.min(...t):null;
-  it._nd=it._nodate||[];
-  it._txt=Object.entries(it).filter(([k])=>k!='_nodate'&&k!='_nd').map(([,v])=>isD(v)?v+' '+fmt(v):v).concat(['PM user','CA user','VA user'].map(k=>(D.people[it[k]]||[''])[0])).concat(it._nd.length?['no date','nodate',...it._nd.map(x=>x+' no date')]:[]).join(' ').toLowerCase();
+  it._nd=it.nodue||it._nodate||[];
+  it._eq=it.Equipment.toLowerCase();it._eqn=norm(it.Equipment);it._seg=it._eq.split(/[^a-z0-9]+/);
+  it._ed=[it.Equipment,it.Description,it.Brand].filter(Boolean).join(' ').toLowerCase();it._edn=norm(it._ed);
+  it._txt=Object.entries(it).filter(([k])=>k[0]!='_').map(([,v])=>isD(v)?v+' '+fmt(v):v).concat(['PM user','CA user','VA user'].map(k=>(D.people[it[k]]||[''])[0])).concat([it._eqn]).concat(it._nd.length?['no date','nodate',...it._nd.map(x=>x+' no date')]:[]).join(' ').toLowerCase();
 });
 const uniq=k=>[...new Set(D.items.map(i=>i[k]).filter(Boolean))].sort();
 uniq('Supervisor').forEach(v=>$('#sup').add(new Option(v,v)));
@@ -138,7 +143,7 @@ function card(it,open,terms){
     if(!nd&&v==null)return `<div class="d off ${k}"><h4>${k}</h4><div class="v">—</div><div class="s">no label</div></div>`;
     const meta=`<div class="s">every ${it[k+' interval']??'—'} mo</div><div class="s">by ${who(it[it_u(k)])}</div><div class="s">signed ${fmt(it[k+' sign'])}</div>`;
     if(nd)return `<div class="d nd ${k}"><h4>${k}</h4><div class="v">No date</div><div class="s">has label, no due date</div>${meta}</div>`;
-    return `<div class="d ${k}"><h4>${k}</h4><div class="v">${fmt(v)}</div><div class="s ${n<0?'late':''}">${rel(n)||'&nbsp;'}</div>${meta}</div>`}).join('');
+    return `<div class="d ${n<0?'over ':''}${k}"><h4>${k}</h4><div class="v">${fmt(v)}</div><div class="s ${n<0?'late':''}">${rel(n)||'&nbsp;'}</div>${meta}</div>`}).join('');
   const notes=['Heads up','Heads up2','Change Loc'].filter(k=>it[k]).map(k=>`<div class="note"><b>${k}:</b> ${fmt(it[k])}</div>`).join('');
   const kv=[['Location',it.Location],['Room',`${it['Room Abrv']||'—'} (${it['Room Num']||'—'})`],['Supervisor',it.Supervisor],['Brand',it.Brand],['Code',it.Code],['Cal type',it['Cal type']],['VA user',null],['IQ date',it['IQ date']],['OQ date',it['OQ date']],['PQ sign date',it['PQ Sign date']]]
    .map(([a,b])=>a=='VA user'?`<span>VA user</span><span>${who(it['VA user'])}</span>`:`<span>${a}</span><span>${fmt(b)}</span>`).join('');
@@ -153,7 +158,10 @@ function render(){
   const terms=$('#q').value.toLowerCase().split(/\s+/).filter(Boolean),sup=$('#sup').value,typ=$('#typ').value;
   let r=D.items.filter(it=>terms.every(t=>it._txt.includes(t))&&(!sup||it.Supervisor===sup)&&(!typ||it['Eq Type']===typ)
     &&(flt=='all'||(flt=='nodate'?it._nd.length>0:(it._min!==null&&(flt=='over'?it._min<0:it._min>=0&&it._min<=90)))));
-  if(flt=='over'||flt=='soon')r.sort((a,b)=>a._min-b._min);
+  // ranking: 1) every word found in the equipment name  2) in name/description/brand  3) anywhere (dates, rooms, people...)
+  const m=(h,hn)=>t=>{const n=norm(t);return h.includes(t)||(n&&hn.includes(n))};
+  r.forEach(it=>{it._tr=!terms.length?0:terms.every(m(it._eq,it._eqn))?0:terms.every(m(it._ed,it._edn))?1:2;it._sg=terms.filter(t=>it._seg.includes(t)).length});
+  r.sort((a,b)=>a._tr-b._tr||b._sg-a._sg||((flt=='over'||flt=='soon')?a._min-b._min:0));
   $('#cnt').textContent=`${r.length} result${r.length==1?'':'s'}`;
   $('#list').innerHTML=r.length?r.slice(0,shown).map(it=>card(it,r.length<=2,terms)).join(''):'<div class="empty">Nothing found. Try fewer words.</div>';
   const mb=$('#more');mb.hidden=r.length<=shown;mb.textContent=`Show more (${r.length-shown} left)`;
@@ -163,31 +171,29 @@ $('#q').addEventListener('input',go);$('#sup').onchange=go;$('#typ').onchange=go
 $('#more').onclick=()=>{shown+=60;render()};
 document.querySelectorAll('#v-search .chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('#v-search .chip').forEach(x=>x.classList.remove('on'));b.classList.add('on');flt=b.dataset.f;go()});
 render();
-// ---- Supervisors tab: every PM/CA/PQ due date = one row; labels without a date (grey in Excel) get their own list
-const recs=[],nds=[];
-D.items.forEach(it=>{TY.forEach(t=>{const v=it[t+' due date'];if(isD(v))recs.push({it,t,v,n:days(v)})});it._nd.forEach(t=>nds.push({it,t}))});
+// ---- Supervisors tab: every PM/CA/PQ due date = one row
+const recs=[];
+D.items.forEach(it=>{TY.forEach(t=>{const v=it[t+' due date'];if(isD(v))recs.push({it,t,v,n:days(v)})})});
 recs.sort((a,b)=>a.v<b.v?-1:a.v>b.v?1:a.it.Equipment<b.it.Equipment?-1:1);
-nds.sort((a,b)=>a.it.Equipment<b.it.Equipment?-1:a.it.Equipment>b.it.Equipment?1:a.t<b.t?-1:1);
 let sSel='all',sTy='all';const sups=uniq('Supervisor');
 const meta=(it,t)=>`every ${it[t+' interval']??'—'} mo · by ${who(it[UK[t]])} · last signed ${fmt(it[t+' sign'])}`;
 const head=(it)=>`<div class="mu">${esc(it.Description||'')}${it.Brand?' · '+esc(it.Brand):''}</div><div class="mu">📍 ${esc(it['Room Abrv']||'')} ${esc(it['Room Num']||'')} · ${esc(it.Location||'')}${sSel=='all'?' · 👤 '+esc(it.Supervisor||''):''}</div>`;
 const row=r=>{const{it,t,n}=r;return `<div class="rw ${t}${n<0?' over':''}"><div class="dy"><b>${n<0?'−'+-n:n}</b><small>${n<0?'days late':n==0?'today':'days'}</small></div><div><div><b class="eq2" data-e="${esc(it.Equipment)}">${esc(it.Equipment)}</b> <span class="badge ty">${t}</span> <span class="mu">${fmt(r.v)}</span></div>${head(it)}<div class="mu">${meta(it,t)}</div></div></div>`};
-const ndrow=r=>{const{it,t}=r;return `<div class="rw nd ${t}"><div class="dy"><b>—</b><small>no date</small></div><div><div><b class="eq2" data-e="${esc(it.Equipment)}">${esc(it.Equipment)}</b> <span class="badge ty">${t}</span> <span class="mu">has label · no due date</span></div>${head(it)}<div class="mu">${meta(it,t)}</div></div></div>`};
 function renderS(){
-  const W=+$('#win').value,ok=r=>(sSel=='all'||r.it.Supervisor==sSel)&&(sTy=='all'||r.t==sTy);
-  const L=recs.filter(ok),N=nds.filter(ok);
+  const W=$('#win').value=='c'?Math.max(0,Math.floor(+$('#cd').value||0)):+$('#win').value,ok=r=>(sSel=='all'||r.it.Supervisor==sSel)&&(sTy=='all'||r.t==sTy);
+  const L=recs.filter(ok);
   const ov=L.filter(r=>r.n<0),inc=L.filter(r=>r.n>=0&&r.n<=W);
-  $('#spills').innerHTML=['all',...sups].map(s=>{const sel=r=>s=='all'||r.it.Supervisor==s,o=recs.filter(r=>r.n<0&&sel(r)).length,g=nds.filter(sel).length;
-    return `<button class="chip pill ${s==sSel?'on':''}" data-s="${s}">${s=='all'?'All':s}${o?`<i title="overdue">${o}</i>`:''}${g?`<i class="g" title="no date">${g}</i>`:''}</button>`}).join('');
-  $('#sum').textContent=`${sSel=='all'?'All supervisors':sSel}: ${ov.length} overdue · ${inc.length} incoming in next ${W} days · ${N.length} label${N.length==1?'':'s'} without date`;
+  $('#spills').innerHTML=['all',...sups].map(s=>{const sel=r=>s=='all'||r.it.Supervisor==s,o=recs.filter(r=>r.n<0&&sel(r)).length;
+    return `<button class="chip pill ${s==sSel?'on':''}" data-s="${s}">${s=='all'?'All':s}${o?`<i title="overdue">${o}</i>`:''}</button>`}).join('');
+  $('#sum').textContent=`${sSel=='all'?'All supervisors':sSel}: ${ov.length} overdue · ${inc.length} incoming in next ${W} days`;
   $('#slist').innerHTML=(ov.length?`<div class="lbl o">OVERDUE (${ov.length})</div>`+ov.map(row).join(''):'')
    +`<div class="td">Today · ${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${today.getFullYear()}</div>`
-   +(inc.length?`<div class="lbl">INCOMING (${inc.length})</div>`+inc.map(row).join(''):'<div class="empty">Nothing due in this window 🎉</div>')
-   +(N.length?`<div class="lbl">NO DATE · HAS LABEL (${N.length})</div>`+N.map(ndrow).join(''):'');
+   +(inc.length?`<div class="lbl">INCOMING (${inc.length})</div>`+inc.map(row).join(''):'<div class="empty">Nothing due in this window 🎉</div>');
 }
 $('#spills').onclick=e=>{const b=e.target.closest('[data-s]');if(b){sSel=b.dataset.s;renderS()}};
 $('#slist').onclick=e=>{const b=e.target.closest('[data-e]');if(b){$('#q').value=b.dataset.e;go();show('search');scrollTo(0,0)}};
-$('#win').onchange=renderS;
+$('#win').onchange=()=>{const c=$('#win').value=='c';$('#cd').hidden=!c;if(c){$('#cd').focus();$('#cd').select()}renderS()};
+$('#cd').oninput=renderS;
 document.querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-ty]').forEach(x=>x.classList.remove('on'));b.classList.add('on');sTy=b.dataset.ty;renderS()});
 function show(t){['search','sup'].forEach(k=>$('#v-'+k).hidden=k!=t);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));history.replaceState(null,'','#'+t);if(t=='sup')renderS()}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.t));
